@@ -49,4 +49,14 @@ describe('CSV Filter', () => {
 
     expect(result).toEqual([headerLine, invoiceLine]);
   });
+
+  it('When the file has an invoice line with IVA and IGIC, the line is removed', () => {
+    const headerLine = 'Num _factura, Fecha, Bruto, Neto, IVA, IGIC, Concepto, CIF_cliente, NIF_cliente';
+    const invoiceLine = '1,02/05/2019,1008,810,21,5,ACERLaptop,B76430134,';
+    const cvsFilter = new FilterCSV([headerLine, invoiceLine]);
+
+    const result = cvsFilter.filter();
+
+    expect(result).toEqual([headerLine]);
+  });
 });
