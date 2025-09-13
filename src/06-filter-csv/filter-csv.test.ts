@@ -29,7 +29,9 @@
  * ------------------
  * - Un fichero con una sola factura donde todo es correcto, debería producir como salida la misma línea
  * - Un fichero con una sola factura donde IVA y IGIC están rellenos, debe eliminarse de la salida
+ *   + Asumo que pueden venir los dos en blanco, sin impuestos
  * - Un fichero con una sola factura donde CIF y NIF están rellenos, debe eliminarse de la salida
+ *   + Asumo que Cuno al menos es obligatorio
  * - Un fichero con una sola factura donde el neto no está bien calculado, debe eliminarse de la salida
  * - Un fichero con una sola factura y algun campo vacío, debe generar la misma linea como salida
  * - Un fichero con varias facturas que tienen el mismo número de factura, debe eliminarse todas ellas de la salida
@@ -40,8 +42,13 @@
 import { FilterCSV } from './filter-csv';
 
 describe('CSV Filter', () => {
+  let headerLine: string;
+
+  beforeEach(() => {
+    headerLine = 'Num _factura, Fecha, Bruto, Neto, IVA, IGIC, Concepto, CIF_cliente, NIF_cliente';
+  });
+
   it('When the file has 1 correct invoice line, when the output is the same line', () => {
-    const headerLine = 'Num _factura, Fecha, Bruto, Neto, IVA, IGIC, Concepto, CIF_cliente, NIF_cliente';
     const invoiceLine = '1,02/05/2019,1008,810,19,,ACERLaptop,B76430134,';
     const cvsFilter = new FilterCSV([headerLine, invoiceLine]);
 
@@ -51,8 +58,25 @@ describe('CSV Filter', () => {
   });
 
   it('When the file has an invoice line with IVA and IGIC, the line is removed', () => {
-    const headerLine = 'Num _factura, Fecha, Bruto, Neto, IVA, IGIC, Concepto, CIF_cliente, NIF_cliente';
     const invoiceLine = '1,02/05/2019,1008,810,21,5,ACERLaptop,B76430134,';
+    const cvsFilter = new FilterCSV([headerLine, invoiceLine]);
+
+    const result = cvsFilter.filter();
+
+    expect(result).toEqual([headerLine]);
+  });
+
+  it('when an invoice line with CIF and NIF are filled, then the line is removed', () => {
+    const invoiceLine = '1,02/05/2019,1008,810,19,,ACERLaptop,B76430134,18742978W';
+    const cvsFilter = new FilterCSV([headerLine, invoiceLine]);
+
+    const result = cvsFilter.filter();
+
+    expect(result).toEqual([headerLine]);
+  });
+
+  it('when an invoice line with CIF and NIF are empty, then the line is removed', () => {
+    const invoiceLine = '1,02/05/2019,1008,810,19,,ACERLaptop,,';
     const cvsFilter = new FilterCSV([headerLine, invoiceLine]);
 
     const result = cvsFilter.filter();
