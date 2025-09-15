@@ -8,7 +8,7 @@
  *
  * Ejemplo de fichero
  * ------------------
- * Num _factura, Fecha, Bruto, Neto, IVA, IGIC, Concepto, CIF_cliente, NIF_cliente
+ * Num_factura, Fecha, Bruto, Neto, IVA, IGIC, Concepto, CIF_cliente, NIF_cliente
  * 1,02/05/2019,1008,810,19,,ACERLaptop,B76430134,
  * 2,03/08/2019,2000,2000,,8,MacBook Pro,,78544372A
  * 3,03/12/2019,1000,2000,19,8, LenovoLaptop,,78544372A
@@ -45,7 +45,7 @@ describe('CSV Filter', () => {
   let headerLine: string;
 
   beforeEach(() => {
-    headerLine = 'Num _factura, Fecha, Bruto, Neto, IVA, IGIC, Concepto, CIF_cliente, NIF_cliente';
+    headerLine = 'Num_factura, Fecha, Bruto, Neto, IVA, IGIC, Concepto, CIF_cliente, NIF_cliente';
   });
 
   it('When the file has 1 correct invoice line, when the output is the same line', () => {
@@ -120,9 +120,15 @@ describe('CSV Filter', () => {
 
     expect(result).toEqual([]);
   });
+
+  it('when there is one invoice line without header, then throws an error exception', () => {
+    const invoiceLine = createInvoiceLine({ id: '1' });
+    const cvsFilter = new FilterCSV([invoiceLine]);
+
+    expect(() => cvsFilter.filter()).toThrow('Invalid header line');
+  });
 });
 
-// Num _factura, Fecha, Bruto, Neto, IVA, IGIC, Concepto, CIF_cliente, NIF_cliente
 function createInvoiceLine({
   id = '1',
   date = '15/09/2025',

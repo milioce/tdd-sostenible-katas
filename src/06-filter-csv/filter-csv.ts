@@ -21,6 +21,10 @@ export class FilterCSV {
   }
 
   filter() {
+    if (!this.validateHeader()) {
+      throw new Error('Error: Invalid header line');
+    }
+
     const invoices = this.getInvoiceData(this.lines);
     const filteredInvoices = invoices.filter((line) => this.validateLine(line));
     const csvLines = this.convertLineToCsv(filteredInvoices);
@@ -35,6 +39,14 @@ export class FilterCSV {
       this.validateNetAmount(invoice) &&
       this.validateDuplicateIds(invoice)
     );
+  }
+
+  private validateHeader(): boolean {
+    if (this.header === undefined) {
+      return true;
+    }
+    
+    return typeof this.header === 'string' && this.header.startsWith('Num_factura,');
   }
 
   private validateLineIvaIgic(invoice: string[]): boolean {
