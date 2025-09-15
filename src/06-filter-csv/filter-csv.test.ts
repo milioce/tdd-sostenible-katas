@@ -33,7 +33,7 @@
  * - Un fichero con una sola factura donde CIF y NIF están rellenos, debe eliminarse de la salida
  *   + Asumo que Cuno al menos es obligatorio
  * - Un fichero con una sola factura donde el neto no está bien calculado, debe eliminarse de la salida
- * - Un fichero con una sola factura y algun campo vacío, debe generar la misma linea como salida
+ * - Un fichero con una sola factura y algun campo opcional vacío, debe generar la misma linea como salida
  * - Un fichero con varias facturas que tienen el mismo número de factura, debe eliminarse todas ellas de la salida
  * - Una lista vacía producirá una lista vacía de salida
  * - Un fichero de una sola línea sin cabecera es incorrecto
@@ -102,6 +102,16 @@ describe('CSV Filter', () => {
     expect(result).toEqual([headerLine]);
   });
 
+    it('when there are multiple invoice lines with the same ID, then are all removed', () => {
+    const invoiceLine1 = createInvoiceLine({id: '1'});
+    const invoiceLine2 = createInvoiceLine({id: '1'});
+    const invoiceLine3 = createInvoiceLine({id: '1'});
+    const cvsFilter = new FilterCSV([headerLine, invoiceLine1, invoiceLine2, invoiceLine3]);
+
+    const result = cvsFilter.filter();
+
+    expect(result).toEqual([headerLine]);
+  });
 });
 
 // Num _factura, Fecha, Bruto, Neto, IVA, IGIC, Concepto, CIF_cliente, NIF_cliente
