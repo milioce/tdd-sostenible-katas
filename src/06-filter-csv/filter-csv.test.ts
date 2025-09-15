@@ -49,7 +49,7 @@ describe('CSV Filter', () => {
   });
 
   it('When the file has 1 correct invoice line, when the output is the same line', () => {
-    const invoiceLine = '1,02/05/2019,1008,810,19,,ACERLaptop,B76430134,';
+    const invoiceLine = createInvoiceLine({});
     const cvsFilter = new FilterCSV([headerLine, invoiceLine]);
 
     const result = cvsFilter.filter();
@@ -58,7 +58,7 @@ describe('CSV Filter', () => {
   });
 
   it('When the file has an invoice line with IVA and IGIC, the line is removed', () => {
-    const invoiceLine = '1,02/05/2019,1008,810,21,5,ACERLaptop,B76430134,';
+    const invoiceLine = createInvoiceLine({ivaTax: '21', igicTax: '7'});
     const cvsFilter = new FilterCSV([headerLine, invoiceLine]);
 
     const result = cvsFilter.filter();
@@ -67,7 +67,7 @@ describe('CSV Filter', () => {
   });
 
   it('when an invoice line with CIF and NIF are filled, then the line is removed', () => {
-    const invoiceLine = '1,02/05/2019,1008,810,19,,ACERLaptop,B76430134,18742978W';
+    const invoiceLine = createInvoiceLine({cif: 'B76430134', nif: '18742978W'});
     const cvsFilter = new FilterCSV([headerLine, invoiceLine]);
 
     const result = cvsFilter.filter();
@@ -76,11 +76,45 @@ describe('CSV Filter', () => {
   });
 
   it('when an invoice line with CIF and NIF are empty, then the line is removed', () => {
-    const invoiceLine = '1,02/05/2019,1008,810,19,,ACERLaptop,,';
+    const invoiceLine = createInvoiceLine({cif: '', nif: ''});
     const cvsFilter = new FilterCSV([headerLine, invoiceLine]);
 
     const result = cvsFilter.filter();
 
     expect(result).toEqual([headerLine]);
   });
+
+  it('when an invoice line has the netAmount incorrectly calculated for IVA tax, then the line is removed', () => {
+    const invoiceLine = createInvoiceLine({grossAmount: '1000', netAmount: '700', ivaTax: '21'});
+    const cvsFilter = new FilterCSV([headerLine, invoiceLine]);
+
+    const result = cvsFilter.filter();
+
+    expect(result).toEqual([headerLine]);
+  });
+
+  it('when an invoice line has the netAmount incorrectly calculated for IGIC tax, then the line is removed', () => {
+    const invoiceLine = createInvoiceLine({grossAmount: '1000', netAmount: '790', igicTax: '7'});
+    const cvsFilter = new FilterCSV([headerLine, invoiceLine]);
+
+    const result = cvsFilter.filter();
+
+    expect(result).toEqual([headerLine]);
+  });
+
 });
+
+// Num _factura, Fecha, Bruto, Neto, IVA, IGIC, Concepto, CIF_cliente, NIF_cliente
+function createInvoiceLine({
+  id = '1',
+  date = '15/09/2025',
+  grossAmount = '1000',
+	netAmount = '790',
+	ivaTax = '21',
+	igicTax = '',
+  concept = 'Test product',
+	nif = '18742978W',
+  cif = ''
+}) {
+  return [id, date, grossAmount, netAmount, ivaTax, igicTax, concept, nif, cif].join(',');
+}

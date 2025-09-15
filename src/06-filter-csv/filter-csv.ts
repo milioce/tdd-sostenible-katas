@@ -19,12 +19,14 @@ export class FilterCSV {
     const lines = this.lines.slice(1) || [];
 
     const invoices = this.getInvoiceData(lines);
-    let filteredInvoices = invoices.filter((line) => this.validateLineIvaIgic(line));
-    filteredInvoices = filteredInvoices.filter((line) => this.validateLineCifNif(line));
-
+    const filteredInvoices = invoices.filter((line) => this.validateLine(line));
     const csvLines = this.convertLineToCsv(filteredInvoices);
 
     return [header, ...csvLines];
+  }
+
+  private validateLine(invoice: string[]) {
+    return this.validateLineIvaIgic(invoice) && this.validateLineCifNif(invoice) && this.validateNetAmount(invoice);
   }
 
   private validateLineIvaIgic(invoice: string[]) {
@@ -33,6 +35,16 @@ export class FilterCSV {
 
   private validateLineCifNif(invoice: string[]) {
     return !this.isEmpty(invoice[InvoiceField.CIF]) !== !this.isEmpty(invoice[InvoiceField.NIF]);
+  }
+
+  private validateNetAmount(invoice: string[]) {
+    const tax = this.isEmpty(invoice[InvoiceField.IVA]) ? +invoice[InvoiceField.IGIC] : +invoice[InvoiceField.IVA];
+    const grossAmount = Number.parseInt(invoice[InvoiceField.BRUTO]);
+    const netAmount = Number.parseInt(invoice[InvoiceField.NETO]);
+
+    const calculatedTaxAmount = grossAmount * (tax / 100);
+    const calculatedNetAmount = grossAmount - Math.round(calculatedTaxAmount);
+    return netAmount === calculatedNetAmount;
   }
 
   private getInvoiceData(lines: string[]) {
