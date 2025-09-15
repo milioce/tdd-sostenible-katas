@@ -29,7 +29,12 @@ export class FilterCSV {
   }
 
   private validateLine(invoice: string[]): boolean {
-    return this.validateLineIvaIgic(invoice) && this.validateLineCifNif(invoice) && this.validateNetAmount(invoice) && this.validateDuplicateIds(invoice);
+    return (
+      this.validateLineIvaIgic(invoice) &&
+      this.validateLineCifNif(invoice) &&
+      this.validateNetAmount(invoice) &&
+      this.validateDuplicateIds(invoice)
+    );
   }
 
   private validateLineIvaIgic(invoice: string[]): boolean {
@@ -55,7 +60,7 @@ export class FilterCSV {
   }
 
   private getCountInvoicesById(id: string): number {
-    return this.lines.filter(line => line[InvoiceField.ID] === id).length;
+    return this.lines.filter((line) => line[InvoiceField.ID] === id).length;
   }
 
   private getInvoiceData(lines: string[]) {

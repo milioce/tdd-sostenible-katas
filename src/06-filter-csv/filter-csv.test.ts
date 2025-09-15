@@ -58,7 +58,7 @@ describe('CSV Filter', () => {
   });
 
   it('When the file has an invoice line with IVA and IGIC, the line is removed', () => {
-    const invoiceLine = createInvoiceLine({ivaTax: '21', igicTax: '7'});
+    const invoiceLine = createInvoiceLine({ ivaTax: '21', igicTax: '7' });
     const cvsFilter = new FilterCSV([headerLine, invoiceLine]);
 
     const result = cvsFilter.filter();
@@ -67,7 +67,7 @@ describe('CSV Filter', () => {
   });
 
   it('when an invoice line with CIF and NIF are filled, then the line is removed', () => {
-    const invoiceLine = createInvoiceLine({cif: 'B76430134', nif: '18742978W'});
+    const invoiceLine = createInvoiceLine({ cif: 'B76430134', nif: '18742978W' });
     const cvsFilter = new FilterCSV([headerLine, invoiceLine]);
 
     const result = cvsFilter.filter();
@@ -76,7 +76,7 @@ describe('CSV Filter', () => {
   });
 
   it('when an invoice line with CIF and NIF are empty, then the line is removed', () => {
-    const invoiceLine = createInvoiceLine({cif: '', nif: ''});
+    const invoiceLine = createInvoiceLine({ cif: '', nif: '' });
     const cvsFilter = new FilterCSV([headerLine, invoiceLine]);
 
     const result = cvsFilter.filter();
@@ -85,7 +85,7 @@ describe('CSV Filter', () => {
   });
 
   it('when an invoice line has the netAmount incorrectly calculated for IVA tax, then the line is removed', () => {
-    const invoiceLine = createInvoiceLine({grossAmount: '1000', netAmount: '700', ivaTax: '21'});
+    const invoiceLine = createInvoiceLine({ grossAmount: '1000', netAmount: '700', ivaTax: '21' });
     const cvsFilter = new FilterCSV([headerLine, invoiceLine]);
 
     const result = cvsFilter.filter();
@@ -94,7 +94,7 @@ describe('CSV Filter', () => {
   });
 
   it('when an invoice line has the netAmount incorrectly calculated for IGIC tax, then the line is removed', () => {
-    const invoiceLine = createInvoiceLine({grossAmount: '1000', netAmount: '790', igicTax: '7'});
+    const invoiceLine = createInvoiceLine({ grossAmount: '1000', netAmount: '790', igicTax: '7' });
     const cvsFilter = new FilterCSV([headerLine, invoiceLine]);
 
     const result = cvsFilter.filter();
@@ -102,15 +102,23 @@ describe('CSV Filter', () => {
     expect(result).toEqual([headerLine]);
   });
 
-    it('when there are multiple invoice lines with the same ID, then are all removed', () => {
-    const invoiceLine1 = createInvoiceLine({id: '1'});
-    const invoiceLine2 = createInvoiceLine({id: '1'});
-    const invoiceLine3 = createInvoiceLine({id: '1'});
+  it('when there are multiple invoice lines with the same ID, then are all removed', () => {
+    const invoiceLine1 = createInvoiceLine({ id: '1' });
+    const invoiceLine2 = createInvoiceLine({ id: '1' });
+    const invoiceLine3 = createInvoiceLine({ id: '1' });
     const cvsFilter = new FilterCSV([headerLine, invoiceLine1, invoiceLine2, invoiceLine3]);
 
     const result = cvsFilter.filter();
 
     expect(result).toEqual([headerLine]);
+  });
+
+  it('when there are empty invoice lines, then they is a empty output', () => {
+    const cvsFilter = new FilterCSV([]);
+
+    const result = cvsFilter.filter();
+
+    expect(result).toEqual([]);
   });
 });
 
@@ -119,12 +127,12 @@ function createInvoiceLine({
   id = '1',
   date = '15/09/2025',
   grossAmount = '1000',
-	netAmount = '790',
-	ivaTax = '21',
-	igicTax = '',
+  netAmount = '790',
+  ivaTax = '21',
+  igicTax = '',
   concept = 'Test product',
-	nif = '18742978W',
-  cif = ''
+  nif = '18742978W',
+  cif = '',
 }) {
   return [id, date, grossAmount, netAmount, ivaTax, igicTax, concept, nif, cif].join(',');
 }
