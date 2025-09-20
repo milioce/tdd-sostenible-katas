@@ -3,5 +3,5 @@ export function fibonnaci(n: number): number {
         return n;
     }
 
-    return 0;
+    return 1;
 }

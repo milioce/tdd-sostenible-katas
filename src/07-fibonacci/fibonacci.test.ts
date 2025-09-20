@@ -37,4 +37,9 @@ describe('Fibonacci', () => {
     it('The second element of the serie is 1', () => {
         expect(fibonnaci(1)).toBe(1);
     });
+
+    it('The third element of the serie is the sum of first and second', () => {
+        expect(fibonnaci(2)).toBe(fibonnaci(0) + fibonnaci(1));
+    });
+
 });
