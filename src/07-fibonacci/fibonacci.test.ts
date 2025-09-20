@@ -23,7 +23,7 @@
  * - Para n igual a 3 devuelve 2
  * - Para n igual a 10 devuelve 55
  * - Para n igual a 17 devuelve 1597
- * - Para n <= 0 devuelve un error
+ * - Para n < 0 devuelve un error
  * 
  */
 
@@ -32,5 +32,9 @@ import { fibonnaci } from "./fibonacci";
 describe('Fibonacci', () => {
     it('The first element of the serie is 0', () => {
         expect(fibonnaci(0)).toBe(0);
+    });
+
+    it('The second element of the serie is 1', () => {
+        expect(fibonnaci(1)).toBe(1);
     });
 });
