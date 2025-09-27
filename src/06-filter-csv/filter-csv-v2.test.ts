@@ -43,8 +43,9 @@
 import { FilterCSV } from './filter-csv-v2';
 
 describe('CSV Filter', () => {
+  const headerLine = 'Num_factura, Fecha, Bruto, Neto, IVA, IGIC, Concepto, CIF_cliente, NIF_cliente';
+
   it('When the file has 1 correct invoice line, when the output is the same line', () => {
-    const headerLine = 'Num_factura, Fecha, Bruto, Neto, IVA, IGIC, Concepto, CIF_cliente, NIF_cliente';
     const invoiceLine = '1,02/05/2019,1000,790,21,,ACERLaptop,B76430134,';
     const cvsFilter = new FilterCSV([headerLine, invoiceLine]);
 
@@ -52,4 +53,14 @@ describe('CSV Filter', () => {
 
     expect(result).toEqual([headerLine, invoiceLine]);
   });
+
+    it('When the file with one line has both IVA and IGIC filled, the invoice is removed', () => {
+    const invoiceLine = '1,02/05/2019,1000,790,21,7,ACERLaptop,B76430134,';
+    const cvsFilter = new FilterCSV([headerLine, invoiceLine]);
+
+    const result = cvsFilter.filter();
+
+    expect(result).toEqual([headerLine]);
+  });
+
 });
