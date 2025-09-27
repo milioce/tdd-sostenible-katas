@@ -46,7 +46,7 @@ describe('CSV Filter', () => {
   const headerLine = 'Num_factura, Fecha, Bruto, Neto, IVA, IGIC, Concepto, CIF_cliente, NIF_cliente';
 
   it('When the file has 1 correct invoice line, when the output is the same line', () => {
-    const invoiceLine = '1,02/05/2019,1000,790,21,,ACERLaptop,B76430134,';
+    const invoiceLine = createInvoiceLine({iva: '21', igic: ''});
     const cvsFilter = new FilterCSV([headerLine, invoiceLine]);
 
     const result = cvsFilter.filter();
@@ -54,8 +54,8 @@ describe('CSV Filter', () => {
     expect(result).toEqual([headerLine, invoiceLine]);
   });
 
-    it('When the file with one line has both IVA and IGIC filled, the invoice is removed', () => {
-    const invoiceLine = '1,02/05/2019,1000,790,21,7,ACERLaptop,B76430134,';
+  it('When the file with one line has both IVA and IGIC filled, the invoice is removed', () => {
+    const invoiceLine = createInvoiceLine({iva: '21', igic: '7'});
     const cvsFilter = new FilterCSV([headerLine, invoiceLine]);
 
     const result = cvsFilter.filter();
@@ -63,4 +63,20 @@ describe('CSV Filter', () => {
     expect(result).toEqual([headerLine]);
   });
 
+  it('When the file with one line has both IVA and IGIC empty, the invoice is removed', () => {
+    const invoiceLine = createInvoiceLine({iva: '', igic: ''});
+    const cvsFilter = new FilterCSV([headerLine, invoiceLine]);
+
+    const result = cvsFilter.filter();
+
+    expect(result).toEqual([headerLine]);
+  });
 });
+
+function createInvoiceLine({iva = '21', igic = '', grossAmount = '1000', netAmount = '790', cif = 'B76430134', nif = ''}): string {
+  const id = '1';
+  const date = '02/05/2019';
+  const concept = 'ACERLaptop';
+
+  return [id, date, grossAmount, netAmount, iva, igic, concept, cif, nif].join(',');
+}
