@@ -71,6 +71,15 @@ describe('CSV Filter', () => {
 
     expect(result).toEqual([headerLine]);
   });
+
+  it('When the file with one line has both CIF and NIF are filled, the invoice is removed', () => {
+    const invoiceLine = createInvoiceLine({cif: 'B76430134', nif: '18742978W'});
+    const cvsFilter = new FilterCSV([headerLine, invoiceLine]);
+
+    const result = cvsFilter.filter();
+
+    expect(result).toEqual([headerLine]);
+  });
 });
 
 function createInvoiceLine({iva = '21', igic = '', grossAmount = '1000', netAmount = '790', cif = 'B76430134', nif = ''}): string {
