@@ -20,11 +20,11 @@ export class FilterCSV {
   }
 
   private validIvaAndIgic(invoiceLine: InvoiceLine): boolean {
-    if (invoiceLine.iva !== '' && invoiceLine.igic !== '') {
+    if (invoiceLine.iva !== 0 && invoiceLine.igic !== 0) {
       return false;
     }
 
-    if (invoiceLine.iva === '' && invoiceLine.igic === '') {
+    if (invoiceLine.iva === 0 && invoiceLine.igic === 0) {
       return false;
     }
 
@@ -44,13 +44,11 @@ export class FilterCSV {
   }
 
   private validCalculatedNetAmount(invoiceLine: InvoiceLine): boolean {
-    const grossAmount = parseInt(invoiceLine.grossAmount);
-    const netAmount = parseInt(invoiceLine.netAmount);
-    const tax = invoiceLine.iva ? parseInt(invoiceLine.iva) : parseInt(invoiceLine.igic);
+    const tax = invoiceLine.iva ? invoiceLine.iva : invoiceLine.igic;
 
-    const calculatedTaxAmount = grossAmount * (tax / 100);
-    const calculatedNetAmount = grossAmount - Math.round(calculatedTaxAmount);
+    const calculatedTaxAmount = invoiceLine.grossAmount * (tax / 100);
+    const calculatedNetAmount = invoiceLine.grossAmount - Math.round(calculatedTaxAmount);
 
-    return netAmount === calculatedNetAmount;
+    return invoiceLine.netAmount === calculatedNetAmount;
   }
 }
