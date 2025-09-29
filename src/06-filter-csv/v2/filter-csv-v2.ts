@@ -32,6 +32,10 @@ export class FilterCSV {
       return false;
     }
 
+     if (invoiceLine.cif === '' && invoiceLine.nif === '') {
+      return false;
+    }
+
     return true;
   }
 }
