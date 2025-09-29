@@ -46,7 +46,7 @@ describe('CSV Filter', () => {
   const headerLine = 'Num_factura, Fecha, Bruto, Neto, IVA, IGIC, Concepto, CIF_cliente, NIF_cliente';
 
   it('When the file has 1 correct invoice line, when the output is the same line', () => {
-    const invoiceLine = createInvoiceLine({iva: '21', igic: ''});
+    const invoiceLine = createInvoiceLine({ iva: '21', igic: '' });
     const cvsFilter = new FilterCSV([headerLine, invoiceLine]);
 
     const result = cvsFilter.filter();
@@ -55,7 +55,7 @@ describe('CSV Filter', () => {
   });
 
   it('When the file with one line has both IVA and IGIC filled, the invoice is removed', () => {
-    const invoiceLine = createInvoiceLine({iva: '21', igic: '7'});
+    const invoiceLine = createInvoiceLine({ iva: '21', igic: '7' });
     const cvsFilter = new FilterCSV([headerLine, invoiceLine]);
 
     const result = cvsFilter.filter();
@@ -64,7 +64,7 @@ describe('CSV Filter', () => {
   });
 
   it('When the file with one line has both IVA and IGIC empty, the invoice is removed', () => {
-    const invoiceLine = createInvoiceLine({iva: '', igic: ''});
+    const invoiceLine = createInvoiceLine({ iva: '', igic: '' });
     const cvsFilter = new FilterCSV([headerLine, invoiceLine]);
 
     const result = cvsFilter.filter();
@@ -73,7 +73,16 @@ describe('CSV Filter', () => {
   });
 
   it('When the file with one line has both CIF and NIF are filled, the invoice is removed', () => {
-    const invoiceLine = createInvoiceLine({cif: 'B76430134', nif: '18742978W'});
+    const invoiceLine = createInvoiceLine({ cif: 'B76430134', nif: '18742978W' });
+    const cvsFilter = new FilterCSV([headerLine, invoiceLine]);
+
+    const result = cvsFilter.filter();
+
+    expect(result).toEqual([headerLine]);
+  });
+
+  it('When the file with one line has both CIF and NIF are empty, the invoice is removed', () => {
+    const invoiceLine = createInvoiceLine({ cif: '', nif: '' });
     const cvsFilter = new FilterCSV([headerLine, invoiceLine]);
 
     const result = cvsFilter.filter();
@@ -82,7 +91,14 @@ describe('CSV Filter', () => {
   });
 });
 
-function createInvoiceLine({iva = '21', igic = '', grossAmount = '1000', netAmount = '790', cif = 'B76430134', nif = ''}): string {
+function createInvoiceLine({
+  iva = '21',
+  igic = '',
+  grossAmount = '1000',
+  netAmount = '790',
+  cif = 'B76430134',
+  nif = '',
+}): string {
   const id = '1';
   const date = '02/05/2019';
   const concept = 'ACERLaptop';
