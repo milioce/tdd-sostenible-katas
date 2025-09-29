@@ -89,6 +89,15 @@ describe('CSV Filter', () => {
 
     expect(result).toEqual([headerLine]);
   });
+
+  it('When in a file with one line the netAmount is not calculated correctly, the invoice is removed', () => {
+    const invoiceLine = createInvoiceLine({ grossAmount: '1000', iva: '21', netAmount: '900' });
+    const cvsFilter = new FilterCSV([headerLine, invoiceLine]);
+
+    const result = cvsFilter.filter();
+
+    expect(result).toEqual([headerLine]);
+  });
 });
 
 function createInvoiceLine({
