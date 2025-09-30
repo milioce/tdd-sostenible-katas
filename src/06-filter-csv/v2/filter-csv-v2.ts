@@ -6,16 +6,17 @@ export class FilterCSV {
   public filter(): string[] {
     const header = this.lines[0];
     const invoices = this.lines.slice(1).map((line) => InvoiceLine.fromCSV(line));
-    const filteredInvoices = invoices.filter(this.validInvoiceLine.bind(this));
+    const filteredInvoices = invoices.filter(this.validInvoiceFilter.bind(this));
     const lines = filteredInvoices.map((invoice) => invoice.toCSV());
     return [header, ...lines];
   }
 
-  private validInvoiceLine(invoiceLine: InvoiceLine): boolean {
+  private validInvoiceFilter(invoiceLine: InvoiceLine, index: number, array: InvoiceLine[]): boolean {
     return (
       this.validIvaAndIgic(invoiceLine) &&
       this.validCifAndNif(invoiceLine) &&
-      this.validCalculatedNetAmount(invoiceLine)
+      this.validCalculatedNetAmount(invoiceLine) &&
+      this.validNonDuplicatedId(invoiceLine, array)
     );
   }
 
@@ -50,5 +51,10 @@ export class FilterCSV {
     const calculatedNetAmount = invoiceLine.grossAmount - Math.round(calculatedTaxAmount);
 
     return invoiceLine.netAmount === calculatedNetAmount;
+  }
+
+  private validNonDuplicatedId(invoiceLine: InvoiceLine, allInvoices: InvoiceLine[]): boolean {
+    const invoicesWithSameId = allInvoices.filter((line) => line.id === invoiceLine.id);
+    return invoicesWithSameId.length === 1;
   }
 }

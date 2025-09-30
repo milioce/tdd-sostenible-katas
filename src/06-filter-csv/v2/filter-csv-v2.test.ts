@@ -99,9 +99,34 @@ describe('CSV Filter', () => {
 
     expect(result).toEqual([headerLine]);
   });
+
+  it('When a file with several lines correctly, all invoices are included in output', () => {
+    const invoiceLine1 = createInvoiceLine({ id: '1' });
+    const invoiceLine2 = createInvoiceLine({ id: '2' });
+    const invoiceLine3 = createInvoiceLine({ id: '3' });
+    const cvsFilter = new FilterCSV([headerLine, invoiceLine1, invoiceLine2, invoiceLine3]);
+
+    const result = cvsFilter.filter();
+
+    expect(result).toEqual([headerLine, invoiceLine1, invoiceLine2, invoiceLine3]);
+  });
+
+  it('When a file has duplicated id, all invoices with duplicated id are removed', () => {
+    const invoiceLine1 = createInvoiceLine({ id: '1' });
+    const invoiceLine2 = createInvoiceLine({ id: '2' });
+    const invoiceLine3 = createInvoiceLine({ id: '3' });
+    const invoiceLine4 = createInvoiceLine({ id: '3' });
+    const invoiceLine5 = createInvoiceLine({ id: '2' });
+    const cvsFilter = new FilterCSV([headerLine, invoiceLine1, invoiceLine2, invoiceLine3, invoiceLine4, invoiceLine5]);
+
+    const result = cvsFilter.filter();
+
+    expect(result).toEqual([headerLine, invoiceLine1]);
+  });
 });
 
 function createInvoiceLine({
+  id = '1',
   iva = '21',
   igic = '',
   grossAmount = '1000',
@@ -109,7 +134,6 @@ function createInvoiceLine({
   cif = 'B76430134',
   nif = '',
 }): string {
-  const id = '1';
   const date = '02/05/2019';
   const concept = 'ACERLaptop';
 
