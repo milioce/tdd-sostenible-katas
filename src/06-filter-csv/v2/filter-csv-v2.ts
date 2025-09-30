@@ -4,6 +4,10 @@ export class FilterCSV {
   constructor(private lines: string[]) {}
 
   public filter(): string[] {
+    if (this.lines.length === 1) {
+      throw new Error('Invalid CSV lines');
+    }
+
     const header = this.lines[0];
     const invoices = this.lines.slice(1).map((line) => InvoiceLine.fromCSV(line));
     const filteredInvoices = invoices.filter(this.validInvoiceFilter.bind(this));
