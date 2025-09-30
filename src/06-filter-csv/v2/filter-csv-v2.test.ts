@@ -123,6 +123,21 @@ describe('CSV Filter', () => {
 
     expect(result).toEqual([headerLine, invoiceLine1]);
   });
+
+  it('When a file has no invoice lines, the output is the same', () => {
+    const cvsFilter = new FilterCSV([]);
+
+    const result = cvsFilter.filter();
+
+    expect(result).toEqual([]);
+  });
+
+  it('When a file has one line, return throws an error exception', () => {
+    const invoiceLine = createInvoiceLine({ id: '1' });
+    const cvsFilter = new FilterCSV([invoiceLine]);
+
+    expect(() => cvsFilter.filter()).toThrow('Invalid CSV lines');
+  });
 });
 
 function createInvoiceLine({
