@@ -21,7 +21,7 @@
  */
 
 function wordWrap(text: string, width: number): string {
-  return undefined;
+  return text;
 }
 
 describe('wordWrap function', () => {
