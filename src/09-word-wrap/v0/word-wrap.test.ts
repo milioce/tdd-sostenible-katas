@@ -21,10 +21,13 @@
  */
 
 function wordWrap(text: string, columnWidth: number): string {
-  if (text.length > columnWidth) {
-    return text.substring(0, columnWidth) + '\n' + text.substring(columnWidth);
+  if (text.length <= columnWidth) {
+    return text;
   }
-  return text;
+
+  const wrappedText = text.substring(0, columnWidth);
+  const unwrappedText = text.substring(columnWidth);
+  return wrappedText + '\n' + unwrappedText;
 }
 
 describe('wordWrap function', () => {
