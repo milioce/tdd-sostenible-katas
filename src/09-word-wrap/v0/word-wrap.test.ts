@@ -21,6 +21,10 @@
  */
 
 function wordWrap(text: string, columnWidth: number): string {
+  if (columnWidth < 0) {
+    throw new Error('Negative column width is not allowed');
+  }
+
   if (text == null) {
     return '';
   }
