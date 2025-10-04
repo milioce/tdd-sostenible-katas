@@ -20,7 +20,10 @@
  * - wordWrap('hello',-5) ⇒ throw exception
  */
 
-function wordWrap(text: string, width: number): string {
+function wordWrap(text: string, columnWidth: number): string {
+  if (text.length > columnWidth) {
+    return text.substring(0, columnWidth) + '\n' + text.substring(columnWidth);
+  }
   return text;
 }
 
