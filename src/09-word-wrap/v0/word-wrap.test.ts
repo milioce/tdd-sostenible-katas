@@ -57,8 +57,9 @@ describe('wordWrap function', () => {
     expect(wordWrap('abc def', 4)).toBe('abc\ndef');
     expect(wordWrap('abc def ghi', 4)).toBe('abc\ndef\nghi');
     expect(wordWrap(' abcd', 4)).toBe('\nabcd');
-
     expect(wordWrap(null, 4)).toBe('');
     expect(wordWrap(undefined, 4)).toBe('');
+
+    expect(() => wordWrap('hello', -3)).toThrow('Negative column width is not allowed');
   });
 });
