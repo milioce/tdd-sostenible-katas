@@ -25,18 +25,24 @@ function wordWrap(text: string, columnWidth: number): string {
     return text;
   }
 
-  let wrappedText: string;
-  let unwrappedText: string;
-
-  if (text.indexOf(' ') > -1 && text.indexOf(' ') < columnWidth) {
-    wrappedText = text.substring(0, text.indexOf(' ')).concat('\n');
-    unwrappedText = text.substring(text.indexOf(' ') + 1);
-  } else {
-    wrappedText = text.substring(0, columnWidth).concat('\n');
-    unwrappedText = text.substring(columnWidth);
-  }
+  const wrapIndex = getWrapIndex(text, columnWidth);
+  const unwrapIndex = getunWrapIndex(text, columnWidth);
+  const wrappedText = text.substring(0, wrapIndex).concat('\n');
+  const unwrappedText = text.substring(unwrapIndex);
 
   return wrappedText.concat(wordWrap(unwrappedText, columnWidth));
+}
+
+function getWrapIndex(text: string, columnWidth: number) {
+  const indexOfSpace = text.indexOf(' ');
+  const shallWrapBySpace = indexOfSpace > -1 && indexOfSpace < columnWidth;
+  return shallWrapBySpace ? indexOfSpace : columnWidth;
+}
+
+function getunWrapIndex(text: string, columnWidth: number) {
+  const indexOfSpace = text.indexOf(' ');
+  const shallWrapBySpace = indexOfSpace > -1 && indexOfSpace < columnWidth;
+  return shallWrapBySpace ? indexOfSpace + 1 : columnWidth;
 }
 
 describe('wordWrap function', () => {
