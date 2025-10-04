@@ -54,16 +54,28 @@ function getunWrapIndex(text: string, columnWidth: number) {
 }
 
 describe('wordWrap function', () => {
-  it('makes every single line of text fit column width', () => {
+  it('empty text does not need to be wrapped', () => {
+    expect(wordWrap('', 4)).toBe('');
+    expect(wordWrap(null, 4)).toBe('');
+    expect(wordWrap(undefined, 4)).toBe('');
+  });
+
+  it('small text does not need to be wrapped', () => {
     expect(wordWrap('hello', 5)).toBe('hello');
+  });
+
+  it('words are wrapped when do no fit the column width', () => {
     expect(wordWrap('longword', 4)).toBe('long\nword');
     expect(wordWrap('reallylongword', 4)).toBe('real\nlylo\nngwo\nrd');
+  });
+
+  it('spaces are preferred for wrapping', () => {
     expect(wordWrap('abc def', 4)).toBe('abc\ndef');
     expect(wordWrap('abc def ghi', 4)).toBe('abc\ndef\nghi');
     expect(wordWrap(' abcd', 4)).toBe('\nabcd');
-    expect(wordWrap(null, 4)).toBe('');
-    expect(wordWrap(undefined, 4)).toBe('');
+  });
 
+  it('Does not allow for negative column width', () => {
     expect(() => wordWrap('hello', -3)).toThrow('Negative column width is not allowed');
   });
 });
