@@ -20,7 +20,7 @@
  * - wordWrap('hello',-5) ⇒ throw exception
  */
 
-function wordWrap(text: string, columnWidth: number): string {
+function wordWrapPrimitives(text: string, columnWidth: number): string {
   if (columnWidth < 0) {
     throw new Error('Negative column width is not allowed');
   }
@@ -39,6 +39,39 @@ function wordWrap(text: string, columnWidth: number): string {
   const unwrappedText = text.substring(unwrapIndex);
 
   return wrappedText.concat(wordWrap(unwrappedText, columnWidth));
+}
+
+function wordWrap(text: string, columnWidth: number): string {
+  return wordWrapNoPrimitives(text, new ColumnWidth(columnWidth));
+}
+
+class ColumnWidth {
+  constructor(private readonly width: number) {
+    if (width < 0) {
+      throw new Error('Negative column width is not allowed');
+    }
+  }
+
+  value() {
+    return this.width;
+  }
+}
+
+function wordWrapNoPrimitives(text: string, columnWidth: ColumnWidth): string {
+  if (text == null) {
+    return '';
+  }
+
+  if (text.length <= columnWidth.value()) {
+    return text;
+  }
+
+  const wrapIndex = getWrapIndex(text, columnWidth.value());
+  const unwrapIndex = getunWrapIndex(text, columnWidth.value());
+  const wrappedText = text.substring(0, wrapIndex).concat('\n');
+  const unwrappedText = text.substring(unwrapIndex);
+
+  return wrappedText.concat(wordWrap(unwrappedText, columnWidth.value()));
 }
 
 function getWrapIndex(text: string, columnWidth: number) {
