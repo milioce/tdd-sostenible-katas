@@ -341,3 +341,106 @@ export class Transaction {
 ```
 
 Ya compila y tenemos el test en rojo
+
+> Para pasar el test, inyectamos la clase Clock en el repositorio
+
+Fichero: TransactionRepository.test.ts
+
+```ts
+describe('The Transaction Repository', () => {
+  it('stores a deposit transaction for a given amount', () => {
+    const today = '25/03/2022';
+    const clock = new Clock();
+    clock.todayAsString = () => today;
+    const amount = 100;
+    const repository = new TransactionRepository(clock); // upd
+    const transactions = repository.allTransactions();
+
+    repository.addDeposit(amount);
+
+    expect(transactions[0]).toEqual(new Transaction(today, amount));
+  });
+});
+```
+
+Y guardamos todas las transacciones en un array
+
+```ts
+export class TransactionRepository {
+  transactions: Transaction[] = [];
+
+  constructor(private clock: Clock) {}
+
+  addDeposit(amount: number) {
+    this.transactions.push(new Transaction(this.clock.todayAsString(), amount));
+  }
+
+  addWithdrawal(amount: number) {}
+
+  allTransactions() {
+    return this.transactions;
+  }
+}
+```
+
+Ahora pasamos la dependencia Clock en los tests de Account y aceptación.
+
+```ts
+...
+import { Clock } from '../../src/Clock';
+
+describe('The Account', () => {
+  const repository = new TransactionRepository(new Clock()); // updated
+  ...
+});
+```
+
+```ts
+import { Clock } from '../../src/Clock';
+
+describe('Print statement', () => {
+  const console = new Console();
+  const consoleSpy = jest.spyOn(console, 'log');
+  const repository = new TransactionRepository(new Clock()); // updated
+  ...
+});
+```
+
+Refactor en el test y en el repositorio
+
+```ts
+describe('The Transaction Repository', () => {
+  const today = '25/03/2022'; // moved
+  const clock = new Clock(); // moved
+  clock.todayAsString = () => today; // moved
+  const repository = new TransactionRepository(clock); // moved
+
+  it('stores a deposit transaction for a given amount', () => {
+    const amount = 100;
+
+    repository.addDeposit(amount);
+
+    const transactions = repository.allTransactions();
+    expect(transactions[0]).toEqual(new Transaction(today, amount));
+  });
+});
+```
+
+```ts
+export class TransactionRepository {
+  transactions: Transaction[] = [];
+
+  constructor(private clock: Clock) {}
+
+  addDeposit(amount: number) {
+    const transaction = new Transaction(this.clock.todayAsString(), amount); // new constant
+    this.transactions.push(transaction);
+  }
+
+  addWithdrawal(amount: number) {}
+
+  allTransactions() {
+    return this.transactions;
+  }
+}
+```
