@@ -16,6 +16,7 @@
     "format:fix": "npm run format -- --write",
     "test": "jest --verbose",
     "test:watch": "npm run test -- --watchAll",
+    "test:kata": "npm run test:watch -- banking",
     "test:coverage": "npm run test -- --coverage",
     "upgrade": "ncu -u"
   },
