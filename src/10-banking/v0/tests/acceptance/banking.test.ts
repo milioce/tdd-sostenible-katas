@@ -8,10 +8,10 @@
  * - Imprimir los asientos de la cuenta por consola
  *
  * Resultado de imprimir los asientos:
- * Date       | Amount    | Balance
- * 14/01/2022 | 2000.00   | 2500.00
- * 13/01/2022 | -500.00   | 500.00
- * 10/01/2022 | 1000.00   | 1000.00
+ * Date | Amount | Balance
+ * 14/01/2022 | 2000.00 | 2500.00
+ * 13/01/2022 | -500.00 | 500.00
+ * 10/01/2022 | 1000.00 | 1000.00
  *
  * Respectar el interfaz público de la Clase Account:
  * export class Account {
@@ -22,7 +22,8 @@
  *
  */
 
-import { Account } from './Account';
+import { Account } from '../../src/Account';
+import { TransactionRepository } from '../../src/TransactionRepository';
 
 class Console {
   log(message: string) {
@@ -33,7 +34,8 @@ class Console {
 describe('Print statement', () => {
   const console = new Console();
   const consoleSpy = jest.spyOn(console, 'log');
-  let account = new Account();
+  let repository = new TransactionRepository();
+  let account = new Account(repository);
 
   it('prints an account statement including the transaactions made throughout the console', () => {
     account.deposit(1000);
