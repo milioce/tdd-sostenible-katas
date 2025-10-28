@@ -24,11 +24,11 @@ describe('The Account', () => {
   });
 
   it('stores a withdraw transaction throught the repositorio', () => {
-    const transaactions = [new Transaction(), new Transaction()];
-    repository.allTransactions = () => transaactions;
+    const transactions = [new Transaction(null, null), new Transaction(null, null)];
+    repository.allTransactions = () => transactions;
 
     account.printStatement();
 
-    expect(printerSpy).toHaveBeenCalledWith(transaactions);
+    expect(printerSpy).toHaveBeenCalledWith(transactions);
   });
 });

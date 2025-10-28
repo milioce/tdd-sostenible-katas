@@ -281,3 +281,63 @@ describe('Print statement', () => {
 ```
 
 > Refactor: movemos las clases Transaction y StatementPrinter a sus propios ficheros
+
+## Paso 5: Aplicando TDD al repositorio
+
+El siguiente paso es hacer TDD al Transaction Repository
+Si fuera un test real, debería ser un test de integración que testeara esta clase contra una base de datos.
+En este ejercicio usaremos un Fake repositorio (un repositorio en memoria)
+
+> Test unitario: TransactionRepository.test.ts
+
+Queremos probar que cuando hacemos un depósito se almacena una transacción con la fecha y un importe determinado.
+
+```ts
+import { Clock } from '../../src/Clock';
+import { Transaction } from '../../src/Transaction';
+import { TransactionRepository } from '../../src/TransactionRepository';
+
+describe('The Transaction Repository', () => {
+  it('stores a deposit transaction for a given amount', () => {
+    const today = '25/03/2022';
+    const clock = new Clock();
+    clock.todayAsString = () => today;
+    const amount = 100;
+    const repository = new TransactionRepository();
+    const transactions = repository.allTransactions();
+
+    repository.addDeposit(amount);
+
+    expect(transactions[0]).toEqual(new Transaction(today, amount));
+  });
+});
+```
+
+- Cada vez que hacemos un asiento debemos obtener la fecha actual
+- En test unitarios no podemos depender de ningún artefacto sobre el que no tienes control. Las fechas generadas por el sistema es un ejemplo, con un new Date() el test nunca pasará por que genera un fecha distinta cada vez y debemos controlar esa aleatoriedad.
+- Para obtener la fecha podemos crear una clase Clock con un metodo todayAsString que devuelve la fecha actual formateada. Este método lo podemos simular con un stub que devuelva la fecha que necesitamos.
+
+Fichero: Clock.ts
+
+```ts
+export class Clock {
+  todayAsStrins() {
+    return '';
+  }
+}
+```
+
+Fichero: Transaction.ts
+
+Añadimos los parámetros al constructor para que compile
+
+```ts
+export class Transaction {
+  constructor(
+    readonly date: string,
+    readonly amount: number
+  ) {}
+}
+```
+
+Ya compila y tenemos el test en rojo
