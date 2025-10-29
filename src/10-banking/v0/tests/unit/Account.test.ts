@@ -25,8 +25,8 @@ describe('The Account', () => {
     expect(addWithdrawSpy).toHaveBeenCalledWith(100);
   });
 
-  it('stores a withdraw transaction throught the repositorio', () => {
-    const transactions = [new Transaction(null, null), new Transaction(null, null)];
+  it('prints the transactions throught the repositorio', () => {
+    const transactions = [new Transaction('22/03/2022', 0), new Transaction('23/03/2022', 0)];
     repository.allTransactions = () => transactions;
 
     account.printStatement();

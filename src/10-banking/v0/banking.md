@@ -629,3 +629,52 @@ describe('Print statement', () => {
 Ahora ya compila todo y tenemos el test unitario en rojo `StatementPrinter.test.ts`
 
 Para cumplir el test imprimimos la cabecera
+
+```ts
+export class StatementPrinter {
+  constructor(private console: Console) {}
+
+  private readonly header = 'Date | Amount | Balance';
+
+  print(transactions: Transaction[]) {
+    this.console.log(this.header);
+  }
+}
+```
+
+## Paso 8. Añadimos un test para imprimir uan transacción
+
+```ts
+describe('The StatementPrinter', () => {
+  ...
+
+  it('prints a statement of account including a given transaction throughout the console', () => {
+    const statementPrinter = new StatementPrinter(console);
+    const transactions = [new Transaction('25/03/2022', 500)];
+
+    statementPrinter.print(transactions);
+
+    expect(consoleSpy).toHaveBeenCalledWith('Date | Amount | Balance');
+    expect(consoleSpy).toHaveBeenCalledWith('25/03/2022 | 500.00 | 500.00');
+  });
+});
+```
+
+Para pasar el test lo mas rápido posible comprobamos si hay transacciones y mostramos la primera transacción
+
+```ts
+export class StatementPrinter {
+  constructor(private console: Console) {}
+
+  private readonly header = 'Date | Amount | Balance';
+
+  print(transactions: Transaction[]) {
+    this.console.log(this.header);
+    if (transactions.length > 0) {
+      this.console.log(
+        `${transactions[0].date} | ${transactions[0].amount.toFixed(2)} | ${transactions[0].amount.toFixed(2)}`
+      );
+    }
+  }
+}
+```
