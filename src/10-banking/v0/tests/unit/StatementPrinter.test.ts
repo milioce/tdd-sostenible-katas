@@ -23,4 +23,20 @@ describe('The StatementPrinter', () => {
     expect(consoleSpy).toHaveBeenCalledWith('Date | Amount | Balance');
     expect(consoleSpy).toHaveBeenCalledWith('25/03/2022 | 500.00 | 500.00');
   });
+
+  it('prints a statement of account including multiple transactions throughout the console', () => {
+    const statementPrinter = new StatementPrinter(console);
+    const transactions = [
+      new Transaction('25/03/2022', 500),
+      new Transaction('26/03/2022', 500),
+      new Transaction('27/03/2022', -200),
+    ];
+
+    statementPrinter.print(transactions);
+
+    expect(consoleSpy).toHaveBeenCalledWith('Date | Amount | Balance');
+    expect(consoleSpy).toHaveBeenCalledWith('27/03/2022 | -200.00 | 800.00');
+    expect(consoleSpy).toHaveBeenCalledWith('26/03/2022 | 500.00 | 1000.00');
+    expect(consoleSpy).toHaveBeenCalledWith('25/03/2022 | 500.00 | 500.00');
+  });
 });

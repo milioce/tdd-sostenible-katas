@@ -713,4 +713,122 @@ export class StatementPrinter {
 }
 ```
 
-## PAso 9.
+## Paso 9. Prueba caso de múltiples transacciones
+
+Vamos a probar el caso de múltiples transacciones prestando atención al orden.
+
+```ts
+it('prints a statement of account including multiple transactions throughout the console', () => {
+  const statementPrinter = new StatementPrinter(console);
+  const transactions = [
+    new Transaction('25/03/2022', 500),
+    new Transaction('26/03/2022', 500),
+    new Transaction('27/03/2022', -200),
+  ];
+
+  statementPrinter.print(transactions);
+
+  expect(consoleSpy).toHaveBeenCalledWith('Date | Amount | Balance');
+  expect(consoleSpy).toHaveBeenCalledWith('27/03/2022 | -200.00 | 800.00');
+  expect(consoleSpy).toHaveBeenCalledWith('26/03/2022 | 500.00 | 1000.00');
+  expect(consoleSpy).toHaveBeenCalledWith('25/03/2022 | 500.00 | 500.00');
+});
+```
+
+Ya tenemos el test en rojo, aplicamos los cambios para pasar a verde
+
+```ts
+export class StatementPrinter {
+  constructor(private console: Console) {}
+
+  private readonly header = 'Date | Amount | Balance';
+
+  print(transactions: Transaction[]) {
+    this.console.log(this.header);
+    let runningBalance = 0;
+
+    transactions
+      .map((transaction) => {
+        runningBalance += transaction.amount;
+        return this.formatStatementLine(transaction, runningBalance);
+      })
+      .reverse()
+      .forEach((line) => this.console.log(line));
+  }
+
+  private formatStatementLine(transaction: Transaction, runningBalance: number) {
+    const formattedAmount = transaction.amount.toFixed(2);
+    const formattedBalance = runningBalance.toFixed(2);
+    return `${transaction.date} | ${formattedAmount} | ${formattedBalance}`;
+  }
+}
+```
+
+Refactor: Muevo todo el código de imprimir las transacciones y dejo el método print() con el mismo nivel de abstraccion
+
+```ts
+export class StatementPrinter {
+  constructor(private console: Console) {}
+
+  private readonly header = 'Date | Amount | Balance';
+
+  print(transactions: Transaction[]) {
+    this.console.log(this.header);
+    this.printStatements(transactions);
+  }
+
+  private printStatements(transactions: Transaction[]) {
+    let runningBalance = 0;
+
+    transactions
+      .map((transaction) => {
+        runningBalance += transaction.amount;
+        return this.formatStatementLine(transaction, runningBalance);
+      })
+      .reverse()
+      .forEach((line) => this.console.log(line));
+  }
+
+  private formatStatementLine(transaction: Transaction, runningBalance: number) {
+    const formattedAmount = transaction.amount.toFixed(2);
+    const formattedBalance = runningBalance.toFixed(2);
+    return `${transaction.date} | ${formattedAmount} | ${formattedBalance}`;
+  }
+}
+```
+
+Refactor: Saco el formateo de las lineas a un método de la clase
+
+```ts
+export class StatementPrinter {
+  constructor(private console: Console) {}
+
+  private readonly header = 'Date | Amount | Balance';
+
+  print(transactions: Transaction[]) {
+    this.console.log(this.header);
+    this.printStatements(transactions);
+  }
+
+  private printStatements(transactions: Transaction[]) {
+    this.generateStatementLines(transactions)
+      .reverse()
+      .forEach((line) => this.console.log(line));
+  }
+
+  private generateStatementLines(transactions) {
+    let runningBalance = 0;
+
+    return transactions.map((transaction) => {
+      runningBalance += transaction.amount;
+      return this.formatStatementLine(transaction, runningBalance);
+    });
+  }
+
+  private formatStatementLine(transaction: Transaction, runningBalance: number) {
+    const formattedAmount = transaction.amount.toFixed(2);
+    const formattedBalance = runningBalance.toFixed(2);
+    return `${transaction.date} | ${formattedAmount} | ${formattedBalance}`;
+  }
+}
+```
