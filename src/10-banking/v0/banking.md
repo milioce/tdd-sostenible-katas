@@ -678,3 +678,39 @@ export class StatementPrinter {
   }
 }
 ```
+
+Refactorizamos
+
+- Extraemos `transactions[0].amount.toFixed(2)` a una constante `formattedAmount`
+- Extraemos `transactions[0].amount.toFixed(2)` a una constante `formattedBalance`
+- Extraemos `transactions[0]` a una constante `transaction`
+- Inicializamos `runningBalance` a 0 y acumulamos el valor de `transaction.amount`
+- Con esto lo dejamos preparado para generalizarlo a varias transacciones
+- Extraemos el código de formatear e imprimir la transacción a un método `formatStatementLine`
+
+```ts
+export class StatementPrinter {
+  constructor(private console: Console) {}
+
+  private readonly header = 'Date | Amount | Balance';
+
+  print(transactions: Transaction[]) {
+    this.console.log(this.header);
+    if (transactions.length > 0) {
+      const transaction = transactions[0];
+      let runningBalance = 0;
+      runningBalance += transaction.amount;
+
+      this.console.log(this.formatStatementLine(transaction, runningBalance));
+    }
+  }
+
+  private formatStatementLine(transaction: Transaction, runningBalance: number) {
+    const formattedAmount = transaction.amount.toFixed(2);
+    const formattedBalance = runningBalance.toFixed(2);
+    return `${transaction.date} | ${formattedAmount} | ${formattedBalance}`;
+  }
+}
+```
+
+## PAso 9.
