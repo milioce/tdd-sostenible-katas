@@ -481,3 +481,76 @@ describe('The Transaction Repository', () => {
   });
 });
 ```
+
+## Paso 6. TDD sobre la clase Clock
+
+Queremos probar que se está generando la fecha y en el formato correcto
+
+Creamos el test unitario Clock.test.ts
+
+```ts
+import { Clock } from '../../src/Clock';
+
+describe('The Clock', () => {
+  it('gets today date in dd/mm/yyyy format', () => {
+    const clock = new Clock();
+    const date = clock.todayAsString();
+
+    expect(date).toEqual('29/10/2025');
+  });
+});
+```
+
+Para pasar el test hacemos que el método `todayAsString` devuelva la fecha actual
+
+```ts
+export class Clock {
+  todayAsString() {
+    const today = new Date();
+    const formattedToday = today.toLocaleDateString('es-ES', { year: 'numeric', month: '2-digit', day: '2-digit' });
+
+    return formattedToday;
+  }
+}
+```
+
+El problema de esta solución es que el test va a fallar si lo ejecutamos otro día.
+Creamos un método protegido que devuelva la fecha y después podemos crear una clase TestableClock en la que sobrescribamos el método y nos permite fijar la fecha.
+
+Fichero `Clock.ts`
+
+```ts
+export class Clock {
+  todayAsString() {
+    const today = this.today();
+    const formattedToday = today.toLocaleDateString('es-ES', { year: 'numeric', month: '2-digit', day: '2-digit' });
+
+    return formattedToday;
+  }
+
+  protected today() {
+    return new Date();
+  }
+}
+```
+
+y creamos la clase `TestableClass` en el test unitario `Clock.test.ts`
+
+```ts
+import { Clock } from '../../src/Clock';
+
+class TestableClass extends Clock {
+  protected today(): Date {
+    return new Date('2022-03-20');
+  }
+}
+
+describe('The Clock', () => {
+  it('gets today date in dd/mm/yyyy format', () => {
+    const clock = new TestableClass();
+    const date = clock.todayAsString();
+
+    expect(date).toEqual('20/03/2022');
+  });
+});
+```
