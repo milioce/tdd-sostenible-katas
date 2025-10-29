@@ -3,10 +3,11 @@ import { StatementPrinter } from '../../src/StatementPrinter';
 import { TransactionRepository } from '../../src/TransactionRepository';
 import { Transaction } from '../../src/Transaction';
 import { Clock } from '../../src/Clock';
+import { Console } from '../../src/Console';
 
 describe('The Account', () => {
   const repository = new TransactionRepository(new Clock());
-  const statementPrinter = new StatementPrinter();
+  const statementPrinter = new StatementPrinter(new Console());
   const account = new Account(repository, statementPrinter);
   let addDepositSpy = jest.spyOn(repository, 'addDeposit');
   let addWithdrawSpy = jest.spyOn(repository, 'addWithdrawal');

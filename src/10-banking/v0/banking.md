@@ -554,3 +554,78 @@ describe('The Clock', () => {
   });
 });
 ```
+
+## Paso 7. TDD de la clase StatementPrinter
+
+En el primer test comprobamos que estamos llamando al console.log()
+
+```ts
+import { Console } from '../../src/Console';
+import { StatementPrinter } from '../../src/StatementPrinter';
+
+describe('The StatementPrinter', () => {
+  const console = new Console();
+  const consoleSpy = jest.spyOn(console, 'log');
+
+  it('always prints the header throughout the console', () => {
+    const statementPrinter = new StatementPrinter(console);
+
+    statementPrinter.print([]);
+    expect(consoleSpy).toHaveBeenCalledWith('Date | Amount | Balance');
+  });
+});
+```
+
+Inyectamos la dependencia de la clase `Console` en `StatementPrinter`
+
+```ts
+import { Console } from './Console';
+import { Transaction } from './Transaction';
+
+export class StatementPrinter {
+  constructor(console: Console) {}
+  print(transactions: Transaction[]) {}
+}
+```
+
+Ahora tenemos que inyectar esa dependencia en el test de aceptación y en el test de Account para que no haya errores.
+
+Test unitario `Account.test.ts`
+
+```ts
+describe('The Account', () => {
+  const repository = new TransactionRepository(new Clock());
+  const statementPrinter = new StatementPrinter(new Console()); // updated
+  const account = new Account(repository, statementPrinter);
+  ...
+});
+```
+
+Test de aceptación `banking.test.ts`
+
+```ts
+describe('Print statement', () => {
+  const console = new Console();
+  const consoleSpy = jest.spyOn(console, 'log');
+  const repository = new TransactionRepository(new Clock());
+  const statementPrinter = new StatementPrinter(new Console());
+  const account = new Account(repository, statementPrinter);
+
+  it('prints an account statement including the transaactions made throughout the console', () => {
+    account.deposit(1000);
+    account.withdraw(500);
+    account.deposit(2000);
+
+    account.printStatement();
+
+    expect(consoleSpy).toHaveBeenCalledWith('Date | Amount | Balance');
+    expect(consoleSpy).toHaveBeenCalledWith('14/01/2022 | 2000.00 | 2500.00');
+    expect(consoleSpy).toHaveBeenCalledWith('13/01/2022 | -500.00 | 500.00');
+    expect(consoleSpy).toHaveBeenCalledWith('10/01/2022 | 1000.00 | 1000.00');
+  });
+});
+```
+
+Ahora ya compila todo y tenemos el test unitario en rojo `StatementPrinter.test.ts`
+
+Para cumplir el test imprimimos la cabecera

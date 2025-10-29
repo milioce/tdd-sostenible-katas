@@ -26,18 +26,13 @@ import { Account } from '../../src/Account';
 import { TransactionRepository } from '../../src/TransactionRepository';
 import { StatementPrinter } from '../../src/StatementPrinter';
 import { Clock } from '../../src/Clock';
-
-class Console {
-  log(message: string) {
-    console.log(message);
-  }
-}
+import { Console } from '../../src/Console';
 
 describe('Print statement', () => {
   const console = new Console();
   const consoleSpy = jest.spyOn(console, 'log');
   const repository = new TransactionRepository(new Clock());
-  const statementPrinter = new StatementPrinter();
+  const statementPrinter = new StatementPrinter(new Console());
   const account = new Account(repository, statementPrinter);
 
   it('prints an account statement including the transaactions made throughout the console', () => {
